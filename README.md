@@ -8,6 +8,7 @@ Cases when you don't need any synchronization mechanism:
 * variables that are accessed by only one thread
 
 In Java, each thread has a separate memory space known as working memory; this holds the values of different variables used for performing operations. After performing an operation, thread copies the updated value of the variable to the main memory, and from there other threads can read the latest value.
+In the situations where the next value of the variable is dependent on the previous value, there is a chance that multiple threads reading and writing the variable may go out of sync, due to a time gap between the reading and writing back to the main memory.
 
 # Volatile
   Using the volatile keyword is a way of making class thread safe - that a method or class instance can be used by multiple threads at the same time without any problem. Simply put, the volatile keyword makes a variable to always go to main memory, for both reads and writes.
@@ -20,6 +21,10 @@ In Java, each thread has a separate memory space known as working memory; this h
   In general, where you need atomic access to a "on-off" variable or one created a fairly small number of times, then the Java atomic classes are your answer. But if you're creating a large number of instances of an object containing a field that needs atomic access, using a volatile field and accessing it via an AtomicReferenceFieldUpdater will generally be more efficient.
   
   Volatile is not suitable for complex operations where you need to prevent access to a variable for the duration of the operation. In such cases, you should use object synchronization or lock classes.
+  
+  * If you feel that all reader threads always get latest value of a variable, you have to mark variable as volatile.
+  * If you have one writer thread to modify the value of variable and multiple reader threads to read the value of variable, volatile modifier guarantees memory consistency. 
+  * If you have multiple threads to write and read variables, volatile modifier alone does not guaranty memory consistency. You have to synchroniye the code or use high level concurrency constructs.
 
   
 # Synchronized
