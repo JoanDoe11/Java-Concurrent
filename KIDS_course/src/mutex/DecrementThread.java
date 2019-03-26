@@ -14,7 +14,10 @@ public class DecrementThread implements Runnable{
     public void run() {
         for(int i=0; i<decrementCount; i++){
             mutex.lock();
+
             Counter.counter--;
+
+            System.out.print("-");
 
             mutex.unlock();
         }

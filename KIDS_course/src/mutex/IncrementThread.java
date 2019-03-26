@@ -16,6 +16,8 @@ public class IncrementThread implements Runnable {
             mutex.lock();
             Counter.counter++;
 
+            System.out.print("+");
+
             mutex.unlock();
         }
     }
