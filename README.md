@@ -66,6 +66,9 @@ Difference between notify() and notifyAll():
     For all threads waiting on this object's monitor the method notify() notifies any one of them to wake up arbitrarily. The choice of exactly which thread to wake is non-deterministic and depends upon the implementation. Since notify() wakes up a single random thread it can be used to implement mutually exclusive locking where threads are doing similar tasks, but in most cases, it would be more viable to implement notifyAll().
     NotifyAll() simply wakes all threads that are waiting on this object's monitor. The awekened threads will complete in the usual manner - like any other thread. But before we allow their execurion to continue, always define a quick check for the condition required to proceed with the thread - because there may be some situations where the thread got woken up without receiving a notification.
   
+# Locks
+  Instead of using implicit locking via the synchronized keyword, the Concurrency API supports various explicit locks specified by the Lock interface. Locks support various methods for finer grained lock control thus are more expressive than implicit monitors.
+  * ReentrantLock - a mutual exclusion lock with the same basic behavior as the implicit monitors accessed via the synchronized keyword, but with extended capabilities.
 
 # Atomic
   A small toolkit of classes that support lock free thread safe programming on single variables.
