@@ -47,6 +47,10 @@ In the situations where the next value of the variable is dependent on the previ
   This method atomically sets a variable to the updateValue if it currently holds the expectedValue, reporting true on success.
   
   A very commonly occurring pattern in programs and concurrent algorithms is the "check then act" pattern. This pattern occurs when the code first checks the value of a variable and then acts based on that value. To work properly in a multithreaded application, "check then act" operations must be atomic. Any thread that start executing this atomic lock of code will finish executing it without interference from other threads. No other threads can execute the atomic block at the same time.
+  
+# Exponential backoff
+  An algorithm that uses feedback to multiplicatively decrease the rate of some process, in order to gradually find an acceptable rate.
+  We start at some relatively small pause, and then double the amount at every awakening. It's also good practice to have some upper limit.
 
 # Mutex
   The simplest solution for the race condition.
