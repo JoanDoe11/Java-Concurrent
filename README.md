@@ -60,7 +60,8 @@ In the situations where the next value of the variable is dependent on the previ
       - we've executed synchronized instance method for the given object
       - we've executed the body of a synchronized block on the given object
       - by executing synchronized static methods for objects of type Class
-  Difference between notify() and notifyAll():
+  
+Difference between notify() and notifyAll():
     For all threads waiting on this object's monitor the method notify() notifies any one of them to wake up arbitrarily. The choice of exactly which thread to wake is non-deterministic and depends upon the implementation. Since notify() wakes up a single random thread it can be used to implement mutually exclusive locking where threads are doing similar tasks, but in most cases, it would be more viable to implement notifyAll().
     NotifyAll() simply wakes all threads that are waiting on this object's monitor. The awekened threads will complete in the usual manner - like any other thread. But before we allow their execurion to continue, always define a quick check for the condition required to proceed with the thread - because there may be some situations where the thread got woken up without receiving a notification.
   
