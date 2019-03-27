@@ -35,9 +35,34 @@ In the situations where the next value of the variable is dependent on the previ
 
   
 # Synchronized
+  Synchronized blocks in Java are synchronized on some object. All synchronize blocks synchronized on the same object can only have one thread executing inside them at a time. All other threads attempting to enter the synchronized block are blocked until the thread inside the synchronized block exits the block.
+  
+    synchronized (sync_object) {
+        // Access shared variables and other shared resources
+    }
+  sync_object is a reference to an object whose lock associates with the monitor. The code is said to be synchronized on the monitor object. Java will use the hash code of the sync_object as the ID for the critical section. For that reason, sync_object should be immutable so we can know for sure that its hash code wont change.
+  
+  We can also use the keyword synchronized on methods, and then the key is "this", but we don't need to reference it.
+  
+  Only one thread can own a monitor at a given time. When a thread acquires a lock, it is said to have entered the monitor.
+
   Java's synchronized keyword guarantees both mutual exclusion and visibility.
   If we make the blocks of threads that modifies the value of shared variable synchronized only one thread can enter the block and changes made by it will be reflected in the main memory. All other threads trying to enter the block at the same time will be blocked and putto sleep.
   In some cases, we may only desire the visibility and not atomicity. Use of synchronized in such situation is an overkill and may cause scalability problems.
+  
+  
+  One tool we can use to coordinate actions of multiple threads in Java is guarded blocks. Such blocks keep a check for a particular condition before resuming the execution.
+  * wait()
+      Waits for a condition to occur. Susspending.
+  * notify()
+      Notifies a thread that is waiting for a condition that the condition has occured. Waking up.
+  When we call wait() it forces the current thread to wait until some other thread invokes notify() or notifyAll() on the same object. For this, the current thread must own the object's monitor. This can happen when:
+      - we've executed synchronized instance method for the given object
+      - we've executed the body of a synchronized block on the given object
+      - by executing synchronized static methods for objects of type Class
+  Difference between notify() and notifyAll():
+    For all threads waiting on this object's monitor the method notify() notifies any one of them to wake up arbitrarily. The choice of exactly which thread to wake is non-deterministic and depends upon the implementation. Since notify() wakes up a single random thread it can be used to implement mutually exclusive locking where threads are doing similar tasks, but in most cases, it would be more viable to implement notifyAll().
+    NotifyAll() simply wakes all threads that are waiting on this object's monitor. The awekened threads will complete in the usual manner - like any other thread. But before we allow their execurion to continue, always define a quick check for the condition required to proceed with the thread - because there may be some situations where the thread got woken up without receiving a notification.
   
 
 # Atomic
