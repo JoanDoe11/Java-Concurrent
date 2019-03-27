@@ -1,6 +1,7 @@
 # Java-Concurrent
 
 Mutual Exclusion - only one thread or process can execute a block of code (critical section) at a time.
+
 Visibility - changes made by one thread to shared data are visible to other threads.
 
 Cases when you don't need any synchronization mechanism:
