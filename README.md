@@ -69,6 +69,9 @@ Difference between notify() and notifyAll():
 # Locks
   Instead of using implicit locking via the synchronized keyword, the Concurrency API supports various explicit locks specified by the Lock interface. Locks support various methods for finer grained lock control thus are more expressive than implicit monitors.
   * ReentrantLock - a mutual exclusion lock with the same basic behavior as the implicit monitors accessed via the synchronized keyword, but with extended capabilities.
+  * ReadWriteLock - an advanced thread lock mechanism. It allows multiple threads to read a certain resource, but only one to write it, at a time. The rules by which a thread is allowed to lock the ReadWriteLock either for reading or writing the guarded resource, are as follows:
+      - read lock: if no threads have locked for writing, and no thread have requested a write lock (but not yet obtained it). Thus, multiple threads can lock the lock for reading.
+      - write lock: if no threads are reading or writing. Thus, only one thread at a time can lock the lock for writing.
   
 # Condition
   A java.util.concurrent.locks.Condition interface provides a thread ability to suspend its execution, until the given condition is true. 
