@@ -33,7 +33,7 @@ public class BlockingQueueImpl implements BlockingQueue {
     }
 
     @Override
-    public Integer dequeuq() {
+    public Integer dequeue() {
 
         Integer result = null;
 
