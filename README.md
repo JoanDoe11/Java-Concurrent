@@ -69,7 +69,12 @@ Difference between notify() and notifyAll():
 # Locks
   Instead of using implicit locking via the synchronized keyword, the Concurrency API supports various explicit locks specified by the Lock interface. Locks support various methods for finer grained lock control thus are more expressive than implicit monitors.
   * ReentrantLock - a mutual exclusion lock with the same basic behavior as the implicit monitors accessed via the synchronized keyword, but with extended capabilities.
-
+  
+# Condition
+  A java.util.concurrent.locks.Condition interface provides a thread ability to suspend its execution, until the given condition is true. 
+  A Condition object is bound to a Lock and is obtained using the newCondition() method.
+  Any calls to change the condition variables do need to be within a synchronized region.
+  
 # Atomic
   A small toolkit of classes that support lock free thread safe programming on single variables.
   In essence, the classes in this package extend the notion of volatile values, fields and array elements to those that also provide an atomic conditional update operation of the form:
