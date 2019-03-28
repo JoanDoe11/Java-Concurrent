@@ -72,11 +72,28 @@ Difference between notify() and notifyAll():
   * ReadWriteLock - an advanced thread lock mechanism. It allows multiple threads to read a certain resource, but only one to write it, at a time. The rules by which a thread is allowed to lock the ReadWriteLock either for reading or writing the guarded resource, are as follows:
       - read lock: if no threads have locked for writing, and no thread have requested a write lock (but not yet obtained it). Thus, multiple threads can lock the lock for reading.
       - write lock: if no threads are reading or writing. Thus, only one thread at a time can lock the lock for writing.
+  * CountDownLatch - has a counter field, which you can decrement as you require. You can then use it to block a calling thread until it's been counted down to zero. If we were doing some parallel processing, we could instantiate the latch with the same value for the counter as a number of threads we want to work across. Then, we could just call countdown() after each thread finishes, guaranteeing that a dependent thread calling await() will block until the worker threads are finished.
+  * CyclicBarrier - a synchronizer that allows a set of threads to wait for each other to reach a common execution point, also called a barrier. CyclicBarriers are used in programs in which we have a fixed number of threads that must wait for each other to reach a common point before continuing execution.
   
 # Condition
   A java.util.concurrent.locks.Condition interface provides a thread ability to suspend its execution, until the given condition is true. 
   A Condition object is bound to a Lock and is obtained using the newCondition() method.
-  Any calls to change the condition variables do need to be within a synchronized region.
+  Any calls to change the condition variab
+  les do need to be within a synchronized region.
+  
+# Exchanger
+  A synchronization point at which threads can pair and swap elements within pairs.
+  Each thread presents some object on entry to the exchange method, matches with a partner thread, and receives its partner's object in return.
+  
+  Exchanger waits until two separate threads call its exchange() method and then it swaps the objects represented by the threads.
+  
+# Future
+  The Future interface is a generic interface that represents the value returned from an asynchronous computation. 
+  It contains methods to check if the computation has been completed, to wait for it and to retreive the result.
+  
+  The result can only be retreived using method get() when the computation has completed, blocking if necessary until it is ready.
+  
+  This interface also contains methods to cancel Callable's execution. However, once the computation has been completed, it cannot be canceled.
   
 # Atomic
   A small toolkit of classes that support lock free thread safe programming on single variables.
@@ -97,3 +114,31 @@ Difference between notify() and notifyAll():
   
   * lock() - start of the critical section. If there is more than one thread, the one that succeeded the lock, should block all the others.
   * unlock() - allows one new thread to go through "lock()" / reinitializes critical section state
+  
+# Semaphore
+  A semaphore controls access to a shared resource through the use of a counter. If the counter is greater than zero, then access is allowed. If it is zero, then access is denied.
+  What the counter is counting are permits that allow access to the shared resource. Thus, to access the resource, a thread must be granted a permit from the semaphore.
+  
+  In general, to use a semaphore, the thread that wants access to the shared resource tries to acquire a permit.
+  * if the semaphore's count is greater than zero, then the thread acquires a permit, which causes the semaphore's count to be decremented.
+  * otherwise, the thread will be blocked until a permit can be acquired
+  When the thread no longer needs access to the shared resource, it releases the permit, which causes the semaphore's count to be incremented. If there is another thread waiting for a permit, then that thread will acquire a permit at that time.
+  
+# Thread pool
+  In Java, threads are mapped to system-level threads which are operating system's resources. If you create threads uncontrollably, you may run out of these resources quickly.
+  The context switching between threads is done by the OS as well - in order to emulate parallelism. A simplistic view is that - the more threads you spawn, the less time each thread spends doing actual work.
+  
+  The Thread pool pattern helps to save resources in a multithreaded application, and also to contain the parallelsim in certain predefined limits. When you use a thread pool, you write your concurrent code in the form of parallel tasks and submit them for exectution to an instance of a thread pool. This instance controls several re-used threads for executing these tasks.
+  The pattern allows you to control the number of threads the application is creating, their lifecycle, as well as to schedule tasks' execution and keep incoming tasks in a queue.
+  
+# Fork/Join
+  The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.
+  
+  This framework distributes tasks to worker threads in a thread pool. It is distinct because it uses a work-stealing algorithm - worker threads that run out of things to do can steal tasks from other threads that are still busy.
+  
+# Cancellation
+  An activity is cancellable if external code can move it to completion before its normal completion. 
+  
+  When using the Executor framework, you can interrupt a specific task without shutting down the ExecutorService. On submitting a task to the service an instance of Future<> is returned by the service. You may call the cancel() method on that instance to interrupt the task. 
+  
+  
