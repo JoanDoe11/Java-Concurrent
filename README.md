@@ -131,6 +131,25 @@ Difference between notify() and notifyAll():
   The Thread pool pattern helps to save resources in a multithreaded application, and also to contain the parallelsim in certain predefined limits. When you use a thread pool, you write your concurrent code in the form of parallel tasks and submit them for exectution to an instance of a thread pool. This instance controls several re-used threads for executing these tasks.
   The pattern allows you to control the number of threads the application is creating, their lifecycle, as well as to schedule tasks' execution and keep incoming tasks in a queue.
   
+# Executor
+  ExecutorService is a framework provided by the JDK which simplifies the execution of tasks in asynchronous mode. Generally speaking, ExecutorService automatically provides a pool of threads and API for assigning tasks to it.
+  ```
+  ExecutorService exevutor = Executors.newFixedThreadPool(n);
+  ```
+  
+  ExecutorService can execute Runnable and Callable tasks. 
+  Methods:
+  * execute() - doesn't give any possibility to get the result of task's execution or to check the task's status
+  * submit() - submits a Callable or a Runnable task to an ExecutorService and returns a result of type Future
+  * invokeAny() - assigns a collection of tasks to an ExecutorService, causing each to be executed, and returns the result of a successful execution of one task.
+  * invokeAll() - assigns a collection of tasks to an ExecutorService, causing each to be executed, and returns the result of all task executions in the form of a list of objects of type Future.
+  
+  In general, the ExecutorService will not be automatically destroyed when there is no tasks to process. It will stay alive and wait for new work to do. To properly shut down an ExecutorService, we have the shutdown() and shutdownNow() APIs.
+  * shutdown() - doesn't cause an immediate destruction of the ExecutorService. It will make the ExecutorService stop accepting new tasks and shut down after all running threads finish their current work.
+  * shutdownNow() - tries to destroy the ExecutorService immediately, but doesn't guarantee that all running threads will be stoopped at the same time. This method returns a list of tasks which are waiting to be processed. It is up to the developer to decide what to do with these tasks.
+  One good way to shut down the ExecutorService is to use both of these methods combined with the awaitTermination() method. With this approach, the ExecutorService will first stop taking new tasks, the wait up to a specified period of time for all tasks to be completed. If that time expires, the execution is stopped immediately.
+  
+  
 # Fork/Join
   The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.
   
