@@ -11,6 +11,13 @@ Cases when you don't need any synchronization mechanism:
 In Java, each thread has a separate memory space known as working memory; this holds the values of different variables used for performing operations. After performing an operation, thread copies the updated value of the variable to the main memory, and from there other threads can read the latest value.
 In the situations where the next value of the variable is dependent on the previous value, there is a chance that multiple threads reading and writing the variable may go out of sync, due to a time gap between the reading and writing back to the main memory.
 
+# Disadvantages of unbounded thread creation
+  * Thread lifecycle overhead - thread creation and teardown are not free. The actual overhead varies across platforms, but thread creation takes time, introducing latency into request processing, and requires some processing activity by the JVM and OS. If requests are frequent and lightweight, creating a new thread for each request can consume significant computing resources.
+  * Resource consumption - Active threads consume system resources, especially memory. When there are more runnable threads than available processors, threads sit idle. Having many idle threads can tie up a lot of memory, putting pressure on the garbage collector, and having many threads competing for the CPUs can impose other performance costs as well. If you have enough threads to keep all the CPUs busy, creating more threads won't help and may even hurt.
+  * Stability - there is a limit on how many threads can be created. The limit varies by platform and is affected by factors including JVM invocation parameters, the requested stack size in the Thread constructor, and limits on threads placed by the underlying OS.
+  
+  Up to a certain point, more threads can improve throughput, but beyond that point creating more threads just slows down your application, and creating one thread too many can cause your entire application to crash horribly. The way to stay out of danger is to place some bound on how many threads your application creates, and to test your application thoroughly to ensure that, even when this bound is reached, it doesn't run out of resources.
+
 # Deamon
   A deamon thread is a thread that does not prevent the JVM from exiting when the program finishes but the thread is still running.
   When a new thread is created it inherits the deaom status of its parent.
@@ -103,6 +110,23 @@ Difference between notify() and notifyAll():
   
   A very commonly occurring pattern in programs and concurrent algorithms is the "check then act" pattern. This pattern occurs when the code first checks the value of a variable and then acts based on that value. To work properly in a multithreaded application, "check then act" operations must be atomic. Any thread that start executing this atomic lock of code will finish executing it without interference from other threads. No other threads can execute the atomic block at the same time.
   
+# Tasks
+  Tasks are logical units of work, and threads are a mechanism by which tasks can run asynchronously.
+  Most concurrent applications are organized around the execution of tasks: abstract, discrete units of work. Dividing the work of an application into tasks simplifies program organization, facilitates error recovery by providing natural structure for parallelizing work.
+  The first step in organizing a program around task execution is identifying sensible task boundaries. Ideally, tasks are independent activities: work that doesn't depend on the state, result or side effects of other tasks. Independence facilitates concurrency, as independent tasks can be executed in parallel if there are adequate processing resources. For greater flexibility in scheduling and load balancing tasks, each task should also represent a small fraction of your application's processing capacity.
+  There are a number of possible policies for scheduling tasks within an application, some of which exploit the potential for concurrency better than others. The simplest is to execute tasks sequentially in a single thread. A more responsive approach is to create a new thread for servicing each task.
+  Task-handling code must be thread-safe, because it may be invoked concurrently for multiple tasks.
+  
+  Both Runnable and Callable describe abstract computational tasks. 
+  
+  Tasks are usually finite: they have a clear starting point and they eventually terminate.
+  
+  The primary abstraction for task execution in the Java class libraries is not Thread class, but the Executor class. The Executor is based on the producer-consumer pattern, where activities that submit tasks are the producers (producing units of work to be done) and the threads that execute tasks are the consumers (consuming those units of work). With executor's execution policy, you can secify task's execution.
+  The lifecycle of a task executed by an Executor has 4 phases: created, submitted, started and completed. Since tasks can take a long time to run, we also want to be able to cancel a task. In the Executor framework, tasks that have been submitted but not yet started can always be cancelled if they are responsive to interruption.
+  
+  A thread pool is tightly bound to a work queue holding tasks waiting to be executed. Worker threads have a simple life: request the next task from the work queu, execute it, and go back to waiting for another task. Executing tasks in pool threads has a number of advantages over the thread-per-task approach. Reusing an existing thread instead of creating a new one amortizes thread creation and teardown costs over multiple requests. As an added bonus, since the worker thread often already exists at the time the request arrives, the latency associated with thread creation does not delay task execution, thus improving responsiveness. 
+  Submitting a task with execute() adds the task to the work queue, and the worker threads repeatedly dequeue tasks from the work queue and execute them.
+
 # Exponential backoff
   An algorithm that uses feedback to multiplicatively decrease the rate of some process, in order to gradually find an acceptable rate.
   We start at some relatively small pause, and then double the amount at every awakening. It's also good practice to have some upper limit.
@@ -131,6 +155,11 @@ Difference between notify() and notifyAll():
   The Thread pool pattern helps to save resources in a multithreaded application, and also to contain the parallelsim in certain predefined limits. When you use a thread pool, you write your concurrent code in the form of parallel tasks and submit them for exectution to an instance of a thread pool. This instance controls several re-used threads for executing these tasks.
   The pattern allows you to control the number of threads the application is creating, their lifecycle, as well as to schedule tasks' execution and keep incoming tasks in a queue.
   
+  * FixedThreadPool - a fixed-size thread pool creates threads as tasks are submitted, up to the maximum pool size, and then attempts to keep the pool size constant (adding new threads if a thread dies due to an unexpected Exception)
+  * CachedThreadPool - a cached thread pool has more flexibility to reap idle threads when the current size of the pool exceedes the demand for processing, and to add new threads when demand increases, but places no bounds on the size of the pool.
+  * SingleThreadExecutor - a single-threaded executor creates a single worker thread to process tasks, replacing it if it dies unexpectedly. Tasks are guaranteed to be processed sequentially according to the order imposed by the task queue. 
+  * ScheduledThreadPool - a fixed-size thread pool that supports delayed and periodic task execution.
+  
 # Executor
   ExecutorService is a framework provided by the JDK which simplifies the execution of tasks in asynchronous mode. Generally speaking, ExecutorService automatically provides a pool of threads and API for assigning tasks to it.
   ```
@@ -149,6 +178,15 @@ Difference between notify() and notifyAll():
   * shutdownNow() - tries to destroy the ExecutorService immediately, but doesn't guarantee that all running threads will be stoopped at the same time. This method returns a list of tasks which are waiting to be processed. It is up to the developer to decide what to do with these tasks.
   One good way to shut down the ExecutorService is to use both of these methods combined with the awaitTermination() method. With this approach, the ExecutorService will first stop taking new tasks, the wait up to a specified period of time for all tasks to be completed. If that time expires, the execution is stopped immediately.
   
+  ## Execution policies
+  The value of decoupling submission from execution is that it lets you easily specify, and subsequently change without great difficulty, the execution policy for a given class of tasks. An execution policy specifies the "what, where, when and how" of task execution, including: 
+  * in what thread will tasks be executed?
+  * in what order should tasks be executed?
+  * how many tasks may execute concurrently?
+  * how many tasks may be queued pending execution?
+  * if a task has to be rejected because the system is overloaded, which task should be selected as the victim, and how should the application be notified?
+  * what actions should be taken before or after executing a task?
+  Execution policies are a resource management tool, and the optimal policy depends on the available computing resources. Separating the specification of execution policy from task submission makes it practical to select an execution policy at deployment time that is matched to the available hardware.
   
 # Fork/Join
   The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.
