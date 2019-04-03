@@ -151,6 +151,21 @@ Difference between notify() and notifyAll():
   * otherwise, the thread will be blocked until a permit can be acquired
   When the thread no longer needs access to the shared resource, it releases the permit, which causes the semaphore's count to be incremented. If there is another thread waiting for a permit, then that thread will acquire a permit at that time.
   
+# Blocking queue
+ There are two types of blocking queues:
+ * unbounded queue - can grow almost indefinitely
+ * bounded queue - with maximal capacity defined
+ 
+ There are two types of methods in the BlockingQueue interface - methods responsible for adding elements to a queue and methods that retrieve those elements. Each method from those two groups behaves differently in case the queue is full/empty.
+ Adding elements:
+ * add() - returns true if insertion was successful, otherwise throws an IllegalStateException
+ * put() - inserts the specified element into a queue, waiting for a free slot if necessary
+ * offer() - returns true if insertion was successful, otherwise false
+ * offer(E e, long timeout, TimeUnit unit) - tries to insert element into a queue and waits for an available slot within a specified timeout
+ Retrieving elements:
+ * take() - waits for a head element of a queue and removes it. If the queue is empty, it blocks and waits for an element to become available.
+ * poll)long timeout, TimeUnit unit) - retrieves and removes the head of the queue, waiting up to the specific wait time if necessary for an element to become available. Returns null after a timeout.
+
 # Thread pool
   In Java, threads are mapped to system-level threads which are operating system's resources. If you create threads uncontrollably, you may run out of these resources quickly.
   The context switching between threads is done by the OS as well - in order to emulate parallelism. A simplistic view is that - the more threads you spawn, the less time each thread spends doing actual work.
