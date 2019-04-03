@@ -127,6 +127,9 @@ Difference between notify() and notifyAll():
   A thread pool is tightly bound to a work queue holding tasks waiting to be executed. Worker threads have a simple life: request the next task from the work queu, execute it, and go back to waiting for another task. Executing tasks in pool threads has a number of advantages over the thread-per-task approach. Reusing an existing thread instead of creating a new one amortizes thread creation and teardown costs over multiple requests. As an added bonus, since the worker thread often already exists at the time the request arrives, the latency associated with thread creation does not delay task execution, thus improving responsiveness. 
   Submitting a task with execute() adds the task to the work queue, and the worker threads repeatedly dequeue tasks from the work queue and execute them.
 
+ The main weakness of the traditional executor service implementations when dealing with tasks, which in turn depend on other subtasks, is that a thread is not able to put a task back to the queue or to the side and then serve/execute another task. The Fork/Join framework addresses this limitation by introducing another layer between the tasks and the threads executing them, which allows the threads to put blocked tasks on the side and deal with them when all their dependencies are executed.
+ Fork pushes new tasks to the queue while the join causes the current task to be sided until it can proceed, thus blocking no threads.
+
 # Exponential backoff
   An algorithm that uses feedback to multiplicatively decrease the rate of some process, in order to gradually find an acceptable rate.
   We start at some relatively small pause, and then double the amount at every awakening. It's also good practice to have some upper limit.
