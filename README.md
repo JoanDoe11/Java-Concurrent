@@ -17,6 +17,21 @@ In the situations where the next value of the variable is dependent on the previ
   * Stability - there is a limit on how many threads can be created. The limit varies by platform and is affected by factors including JVM invocation parameters, the requested stack size in the Thread constructor, and limits on threads placed by the underlying OS.
   
   Up to a certain point, more threads can improve throughput, but beyond that point creating more threads just slows down your application, and creating one thread too many can cause your entire application to crash horribly. The way to stay out of danger is to place some bound on how many threads your application creates, and to test your application thoroughly to ensure that, even when this bound is reached, it doesn't run out of resources.
+  
+# Wait vs Sleep
+  Wait() is an instance method that's used for thread synchronization. It can be called on any object, but it can only be called from a synchronized block. It releases the lock on the object so that another thread can jump in and acquire a lock.
+  Sleep() is a static method that can be called from any context. It pauses the current thread and does not release any locks. 
+  
+  When we use sleep() method, a thread gets started after a specified time interval, unless it is interrupted. For wait(), the waking up process is a bit more complicated. We can wake the thread by calling either the notify() or notifyAll() methods on the monitor that is being waited on. Use notifyAll() instead of notify() when you want to wake all threads that are in the waiting state. Similarly to the wait() method itself, notify() and notifyAll() have to be called from the synchronized context.
+  
+  In general, you should use sleep() for controlling execution time of one thread and wait() for multi-thread synchronization.
+
+# Interrupting a thread
+ If any thread is sin sleeping or waiting state, calling the interrupt() method on the thread breaks out the sleeping or waiting state throwing InterruptedException. If the thread is not in the sleeping or waiting state, calling the interrupt() method performs normal behavior and doesn't interrupt the thread but sets the interrupt flag to true.
+ * public void interrupt()
+ * public static boolean interrupted()
+ * public boolean isInterrupted()
+ If thread is not in sleeping or waiting state, calling the interrupt() method sets the interrupted flag to true that can be used to stop the thread by the java programmer later.
 
 # Deamon
   A deamon thread is a thread that does not prevent the JVM from exiting when the program finishes but the thread is still running.
