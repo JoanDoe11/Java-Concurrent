@@ -110,12 +110,17 @@ Difference between notify() and notifyAll():
   Exchanger waits until two separate threads call its exchange() method and then it swaps the objects represented by the threads.
   
 # Future
-  The Future interface is a generic interface that represents the value returned from an asynchronous computation. 
+  The Future interface is a generic interface that represents the value returned from an asynchronous computation. The result will eventually appear in the Fututre after the processing is complete.
   It contains methods to check if the computation has been completed, to wait for it and to retreive the result.
+  
+  Long running methods are good candidates for asynchronous processing and the Future interface. This enables us to execute some other process while we are waiting for the task encapsulated in Future to complete.
   
   The result can only be retreived using method get() when the computation has completed, blocking if necessary until it is ready.
   
   This interface also contains methods to cancel Callable's execution. However, once the computation has been completed, it cannot be canceled.
+  
+  * isDone() - tells us if the task is finished, true/false
+  * get() - returns the actual result, but blocks the execution until the task is complete
   
 # Atomic
   A small toolkit of classes that support lock free thread safe programming on single variables.
