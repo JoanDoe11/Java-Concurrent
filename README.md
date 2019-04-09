@@ -236,4 +236,6 @@ Difference between notify() and notifyAll():
   
   When using the Executor framework, you can interrupt a specific task without shutting down the ExecutorService. On submitting a task to the service an instance of Future<> is returned by the service. You may call the cancel() method on that instance to interrupt the task. 
   
-  
+# Memoization
+ An optimization technique used primarily to speed up computer programs by storing the results of expensive function calls and returning the cached result when the same inputs occur again.
+ A Memoizer is a class that encapsulates the process of creating a value, and remembering the value (memoizing it) so that subsequent calls to get the value will return the memoized value, and not call the Factory method to create it. It encapsulates the proces of "getOrCreate()" which is highly useful when you are getting a resource that does not change by a key (think cache) and which is generally considered to be expensive to create.
